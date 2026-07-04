@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Font Bio Instagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .font-card:hover { transform: translateY(-2px); transition: all 0.2s; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Generator Font Bio Instagram</h1>
+            <p class="text-gray-600">Ketik teks di bawah, lalu klik tombol "Salin" untuk menggunakannya!</p>
+        </header>
+
+        <div class="mb-8">
+            <input type="text" id="userInput" placeholder="Tulis bio kamu di sini..." 
+                   class="w-full p-4 text-xl border-2 border-indigo-200 rounded-xl focus:border-indigo-500 outline-none shadow-sm">
+        </div>
+
+        <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Font akan muncul di sini -->
+        </div>
+    </div>
+
+    <textarea id="tempClipboard" style="position: absolute; left: -9999px;"></textarea>
+
+    <script>
+        const input = document.getElementById('userInput');
+        const grid = document.getElementById('resultsGrid');
+        const tempClipboard = document.getElementById('tempClipboard');
+
+        const fonts = [
+            { name: "Bold", map: { 'a': '𝐚', 'b': '𝐛', 'c': '𝐜', 'd': '𝐝', 'e': '𝐞', 'f': '𝐟', 'g': '𝐠', 'h': '𝐡', 'i': '𝐢', 'j': '𝐣', 'k': '𝐤', 'l': '𝐥', 'm': '𝐦', 'n': '𝐧', 'o': '𝐨', 'p': '𝐩', 'q': '𝐪', 'r': '𝐫', 's': '𝐬', 't': '𝐭', 'u': '𝐮', 'v': '𝐯', 'w': '𝐰', 'x': '𝐱', 'y': '𝐲', 'z': '𝐳' } },
+            { name: "Italic", map: { 'a': '𝑎', 'b': '𝑏', 'c': '𝑐', 'd': '𝑑', 'e': '𝑒', 'f': '𝑓', 'g': '𝑔', 'h': 'ℎ', 'i': '𝑖', 'j': '𝑗', 'k': '𝑘', 'l': '𝑙', 'm': '𝑚', 'n': '𝑛', 'o': '𝑜', 'p': '𝑝', 'q': '𝑞', 'r': '𝑟', 's': '𝑠', 't': '𝑡', 'u': '𝑢', 'v': '𝑣', 'w': '𝑤', 'x': '𝑥', 'y': '𝑦', 'z': '𝑧' } },
+            { name: "Script", map: { 'a': '𝒶', 'b': '𝒷', 'c': '𝒸', 'd': '𝒹', 'e': 'ℯ', 'f': '𝒻', 'g': 'ℊ', 'h': '𝒽', 'i': '𝒾', 'j': '𝒿', 'k': '𝓀', 'l': '𝓁', 'm': '𝓂', 'n': '𝓃', 'o': 'ℴ', 'p': '𝓅', 'q': '𝓆', 'r': '𝓇', 's': '𝓈', 't': '𝓉', 'u': '𝓊', 'v': '𝓋', 'w': '𝓌', 'x': '𝓍', 'y': '𝓎', 'z': '𝓏' } },
+            { name: "Double Struck", map: { 'a': '𝕒', 'b': '𝕓', 'c': '𝕔', 'd': '𝕕', 'e': '𝕖', 'f': '𝕗', 'g': '𝕘', 'h': '𝕙', 'i': '𝕚', 'j': '𝕛', 'k': '𝕜', 'l': '𝕝', 'm': '𝕞', 'n': '𝕟', 'o': '𝕠', 'p': '𝕡', 'q': '𝕢', 'r': '𝕣', 's': '𝕤', 't': '𝕥', 'u': '𝕦', 'v': '𝕧', 'w': '𝕨', 'x': '𝕩', 'y': '𝕪', 'z': '𝕫' } },
+            { name: "Monospace", map: { 'a': '𝚊', 'b': '𝚋', 'c': '𝚌', 'd': '𝚍', 'e': '𝚎', 'f': '𝚏', 'g': '𝚐', 'h': '𝚑', 'i': '𝚒', 'j': '𝚓', 'k': '𝚔', 'l': '𝚕', 'm': '𝚖', 'n': '𝚗', 'o': '𝚘', 'p': '𝚙', 'q': '𝚚', 'r': '𝚛', 's': '𝚜', 't': '𝚝', 'u': '𝚞', 'v': '𝚟', 'w': '𝚠', 'x': '𝚡', 'y': '𝚢', 'z': '𝚣' } }
+        ];
+
+        function convertText(text, map) {
+            return text.split('').map(char => map[char.toLowerCase()] || char).join('');
+        }
+
+        function copyToClipboard(text, btn) {
+            tempClipboard.value = text;
+            tempClipboard.select();
+            document.execCommand('copy');
+            
+            const originalText = btn.innerText;
+            btn.innerText = "Disalin!";
+            btn.classList.replace("bg-indigo-600", "bg-green-600");
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.replace("bg-green-600", "bg-indigo-600");
+            }, 2000);
+        }
+
+        function updateFonts() {
+            const val = input.value || "Contoh Bio Instagram";
+            grid.innerHTML = '';
+            
+            for(let i = 0; i < 100; i++) {
+                const fontIndex = i % fonts.length;
+                const converted = convertText(val, fonts[fontIndex].map);
+                
+                const card = document.createElement('div');
+                card.className = "font-card bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex justify-between items-center";
+                card.innerHTML = `
+                    <div>
+                        <p class="text-xl font-medium text-gray-800">${converted}</p>
+                        <p class="text-xs text-gray-400 mt-1">${fonts[fontIndex].name} ${i+1}</p>
+                    </div>
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">Salin</button>
+                `;
+                
+                card.querySelector('button').onclick = (e) => {
+                    copyToClipboard(converted, e.target);
+                };
+                grid.appendChild(card);
+            }
+        }
+
+        input.addEventListener('input', updateFonts);
+        updateFonts();
+    </script>
+</body>
+</html>
